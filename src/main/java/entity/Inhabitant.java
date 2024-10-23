@@ -3,23 +3,50 @@ package entity;
 import exception.PassNumbersOverflowException;
 import repository.HashMapInhabitantRepository;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.Objects;
 
 public class Inhabitant implements Serializable {
     private String firstName;
     private String lastName;
     private final String passNumber;
-    private static long lastGeneratedPassNumber = HashMapInhabitantRepository.getLastGeneratedPassNumber();
     private final static long MAX_PASS_NUMBER = 0xffffffffL;
 
     public Inhabitant(String firstName, String lastName) throws PassNumbersOverflowException {
+        File saveFile = HashMapInhabitantRepository.getSaveLastGeneratedPassNumberFile();
+        long lastGeneratedPassNumber;
+
+        /*
+        Если файл с сохраненным значением последнего полученного пропуска
+        найден то считываем, иначе начинаем отсчет с нуля
+         */
+        if (!saveFile.exists()) {
+            lastGeneratedPassNumber = 0x00000000L;
+        } else {
+            try (DataInputStream dataInputStream = new DataInputStream(new FileInputStream(saveFile))) {
+                lastGeneratedPassNumber = dataInputStream.readLong();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         if (lastGeneratedPassNumber >= MAX_PASS_NUMBER) {
             throw new PassNumbersOverflowException("Превышено возможное число пропусков");
         }
+
         this.firstName = firstName;
         this.lastName = lastName;
+
         passNumber = String.format("%08x", ++lastGeneratedPassNumber);
+
+        /*
+        Сохраняем новый номер пропуска в save-файл
+         */
+        try (DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(saveFile))) {
+            dataOutputStream.writeLong(lastGeneratedPassNumber);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String getFirstName() {

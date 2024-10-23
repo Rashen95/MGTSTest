@@ -6,11 +6,13 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface InhabitantRepository {
-    public Map<String, Inhabitant> getInhabitants();
+    Map<String, Inhabitant> getInhabitants();
 
-    public Optional<Inhabitant> getInhabitantByPassNumber(String passNumber);
+    Optional<Inhabitant> getInhabitantByPassNumber(String passNumber);
 
     boolean removeInhabitantByPassNumber(String passNumber);
 
-    public Inhabitant addInhabitant(Inhabitant inhabitant);
+    Inhabitant addInhabitant(Inhabitant inhabitant);
+
+    void clear();
 }
