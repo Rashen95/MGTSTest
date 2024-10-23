@@ -2,11 +2,8 @@ package view;
 
 import controller.InhabitantController;
 import entity.Inhabitant;
-import exception.InhabitantNotFoundException;
-import exception.InvalidPassNumberException;
 import exception.PassNumbersOverflowException;
 
-import java.util.Map;
 import java.util.Scanner;
 
 public class InhabitantView {
@@ -43,14 +40,18 @@ public class InhabitantView {
             System.out.print("Введите номер интересующей вас команды: ");
 
             String select = scanner.nextLine();
+
             if (!select.strip().matches("^[1-6]$")) {
                 System.out.println("Введена неверная команда. Введите число от 1 до 6");
+                System.out.println();
                 continue;
             }
+
             System.out.println();
+
             switch (select) {
-                case "1" -> printAllInhabitants();
-                case "2" -> printAllPassNumber();
+                case "1" -> inhabitantController.printAllInhabitants();
+                case "2" -> inhabitantController.printAllPassNumbers();
                 case "3" -> {
                     System.out.print("Введите имя нового жителя: ");
                     String firsName = scanner.nextLine().strip();
@@ -58,64 +59,28 @@ public class InhabitantView {
                     String lastName = scanner.nextLine().strip();
                     System.out.println();
                     try {
-                        Inhabitant inhabitant = inhabitantController.addInhabitant(new Inhabitant(firsName, lastName));
-                        System.out.printf("Житель %s %s успешно добавлен\n\n", firsName, lastName);
+                        inhabitantController.addInhabitant(new Inhabitant(firsName, lastName));
                     } catch (PassNumbersOverflowException e) {
-                        e.printStackTrace();
+                        System.out.println("ОШИБКА: " + e.getMessage());
                     }
                 }
                 case "4" -> {
                     System.out.print("Введите номер пропуска: ");
-                    String passNumber = scanner.nextLine().strip();
-                    Inhabitant inhabitant;
-                    try {
-                        inhabitant = inhabitantController.getInhabitantByPassNumber(passNumber);
-                    } catch (InvalidPassNumberException | InhabitantNotFoundException e) {
-                        e.printStackTrace();
-                        continue;
-                    }
-                    System.out.println(inhabitant);
+                    String passNumber = scanner.nextLine();
+                    System.out.println();
+                    inhabitantController.printInhabitantByPassNumber(passNumber);
                 }
                 case "5" -> {
                     System.out.print("Введите номер пропуска: ");
-                    String passNumber = scanner.nextLine().strip();
-                    try {
-                        inhabitantController.removeInhabitantByPassNumber(passNumber);
-                    } catch (InvalidPassNumberException | InhabitantNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    String passNumber = scanner.nextLine();
+                    System.out.println();
+                    inhabitantController.removeInhabitantByPassNumber(passNumber);
                 }
                 case "6" -> {
-                    System.out.println();
                     System.out.println(">>>ЗАВЕРШАЮ РАБОТУ ПРИЛОЖЕНИЯ<<<");
                     flag = false;
                 }
             }
         }
-    }
-
-    private void printAllInhabitants() {
-        if (inhabitantController.getInhabitants().isEmpty()) {
-            System.out.println(">>>Список пуст<<<");
-            System.out.println();
-            return;
-        }
-        System.out.println("Список всех жителей: ");
-        for (Map.Entry<String, Inhabitant> entry : inhabitantController.getInhabitants().entrySet()) {
-            System.out.println(entry.getValue());
-        }
-    }
-
-    private void printAllPassNumber() {
-        if (inhabitantController.getInhabitants().isEmpty()) {
-            System.out.println(">>>Список пуст<<<");
-            System.out.println();
-            return;
-        }
-        System.out.println("Список всех пропусков: ");
-        for (Map.Entry<String, Inhabitant> entry : inhabitantController.getInhabitants().entrySet()) {
-            System.out.println(entry.getKey());
-        }
-        System.out.println();
     }
 }

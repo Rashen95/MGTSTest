@@ -6,7 +6,6 @@ import exception.InvalidPassNumberException;
 import service.InhabitantService;
 
 import java.util.Map;
-import java.util.Optional;
 
 public class InhabitantController {
     private final InhabitantService inhabitantService;
@@ -15,31 +14,53 @@ public class InhabitantController {
         this.inhabitantService = inhabitantManager;
     }
 
-    public Inhabitant addInhabitant(Inhabitant inhabitant) {
-        return inhabitantService.addInhabitant(inhabitant);
+    public void addInhabitant(Inhabitant inhabitant) {
+        Inhabitant addedInhabitant = inhabitantService.addInhabitant(inhabitant);
+        System.out.printf("Житель %s %s успешно добавлен с номером пропуска %s\n\n",
+                addedInhabitant.getFirstName(), addedInhabitant.getLastName(), addedInhabitant.getPassNumber());
     }
 
-    public void removeInhabitantByPassNumber(String passNumber) throws InvalidPassNumberException, InhabitantNotFoundException {
-        if (!passNumber.toUpperCase().matches("^[0-9A-F]{8}$")) {
-            throw new InvalidPassNumberException("Вы ввели некорректный номер пропуска");
-        }
-        if (!inhabitantService.removeInhabitantByPassNumber(passNumber.toUpperCase())) {
-            throw new InhabitantNotFoundException("Житель с таким пропуском не найден");
+    public void removeInhabitantByPassNumber(String passNumber) {
+        try {
+            Inhabitant inhabitant = inhabitantService.getInhabitantByPassNumber(passNumber);
+            inhabitantService.removeInhabitantByPassNumber(passNumber);
+            System.out.printf("Житель %s %s с пропуском %s успешно удален\n\n",
+                    inhabitant.getFirstName(), inhabitant.getLastName(), passNumber);
+        } catch (InvalidPassNumberException | InhabitantNotFoundException e) {
+            System.out.println("ОШИБКА: " + e.getMessage() + "\n");
         }
     }
 
-    public Map<String, Inhabitant> getInhabitants() {
-        return inhabitantService.getInhabitants();
+    public void printAllInhabitants() {
+        if (inhabitantService.getInhabitants().isEmpty()) {
+            System.out.println(">>>Список пуст<<<");
+            System.out.println();
+            return;
+        }
+        System.out.println("Список всех жителей: ");
+        for (Map.Entry<String, Inhabitant> entry : inhabitantService.getInhabitants().entrySet()) {
+            System.out.println(entry.getValue());
+        }
     }
 
-    public Inhabitant getInhabitantByPassNumber(String passNumber) throws InvalidPassNumberException, InhabitantNotFoundException {
-        if (!passNumber.toUpperCase().matches("^[0-9A-F]{8}$")) {
-            throw new InvalidPassNumberException("Вы ввели некорректный номер пропуска");
+    public void printAllPassNumbers() {
+        if (inhabitantService.getInhabitants().isEmpty()) {
+            System.out.println(">>>Список пуст<<<");
+            System.out.println();
+            return;
         }
-        Optional<Inhabitant> inhabitant = inhabitantService.getInhabitantByPassNumber(passNumber);
-        if (inhabitant.isEmpty()) {
-            throw new InhabitantNotFoundException("Житель с таким пропуском не найден");
+        System.out.println("Список всех пропусков: ");
+        for (Map.Entry<String, Inhabitant> entry : inhabitantService.getInhabitants().entrySet()) {
+            System.out.println(entry.getKey());
         }
-        return inhabitant.get();
+        System.out.println();
+    }
+
+    public void printInhabitantByPassNumber(String passNumber) {
+        try {
+            System.out.println(inhabitantService.getInhabitantByPassNumber(passNumber));
+        } catch (InvalidPassNumberException | InhabitantNotFoundException e) {
+            System.out.println("ОШИБКА: " + e.getMessage() + "\n");
+        }
     }
 }

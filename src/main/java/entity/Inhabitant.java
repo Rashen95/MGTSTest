@@ -1,6 +1,7 @@
 package entity;
 
 import exception.PassNumbersOverflowException;
+import repository.HashMapInhabitantRepository;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,7 +10,7 @@ public class Inhabitant implements Serializable {
     private String firstName;
     private String lastName;
     private final String passNumber;
-    private static long lastGeneratedPassNumber = 0x00000000L;
+    private static long lastGeneratedPassNumber = HashMapInhabitantRepository.getLastGeneratedPassNumber();
     private final static long MAX_PASS_NUMBER = 0xffffffffL;
 
     public Inhabitant(String firstName, String lastName) throws PassNumbersOverflowException {

@@ -1,5 +1,5 @@
 import controller.InhabitantController;
-import repository.InhabitantRepository;
+import repository.HashMapInhabitantRepository;
 import service.InhabitantService;
 import view.InhabitantView;
 
@@ -8,7 +8,7 @@ public class App {
         new InhabitantView(
                 new InhabitantController(
                         new InhabitantService(
-                                new InhabitantRepository())))
+                                new HashMapInhabitantRepository())))
                 .start();
     }
 }
