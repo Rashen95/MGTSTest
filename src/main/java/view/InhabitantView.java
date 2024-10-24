@@ -47,7 +47,7 @@ public class InhabitantView {
             String select = scanner.nextLine();
 
             if (!select.strip().matches("^[1-7]$")) {
-                System.out.println(">>>Введена неверная команда. Введите число от 1 до 7<<<");
+                System.out.println("\n>>>Введена неверная команда. Введите число от 1 до 7<<<");
                 System.out.println();
                 continue;
             }

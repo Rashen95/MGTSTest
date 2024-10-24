@@ -52,7 +52,7 @@ public class HashMapInhabitantRepositoryTest {
         Inhabitant inhabitant = new Inhabitant("Артем", "Привалов");
         hashMapInhabitantRepository.addInhabitant(inhabitant);
         boolean isRemoved = hashMapInhabitantRepository.removeInhabitantByPassNumber(inhabitant.getPassNumber());
-        
+
         if (!isRemoved) {
             System.out.println("Тест не пройден (житель по номеру пропуска не удален)");
         } else {
